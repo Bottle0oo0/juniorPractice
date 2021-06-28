@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet" />
+    <script src="jq/jquery-3.6.0.min.js"></script>
+    <script src="bootstrap/js/bootstrap.js"></script>
+
+</head>
+<body>
+
+<div class = "container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>用户列表</h1>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table table-striped table-hover" >
+            <tr>
+                <td>编号</td>
+                <td>用户名</td>
+                <td>登录名</td>
+                <td>数据源</td>
+                <td>操作</td>
+            </tr>
+            <tr th:each="user,iter : ${users}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.uname}"></td>
+                <td th:text="${user.loginName}"></td>
+                <td th:text="${user.dbSource}"></td>
+                <td>
+                    <button type="button" class="btn btn-primary" th:onclick="'javascript:edit('+${user.id}+')'">修改</button>
+                    <button type="button" class="btn btn-danger" >删除</button>
+                </td>
+            </tr>
+
+        </table>
+    </div>
+</div>
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary btn-lg"
+        data-toggle="modal" data-target="#myModal">
+    test
+</button>
+
+<!--修改模态框-->
+<div class="modal fade" tabindex="-1" role="dialog" id = "myModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">修改用户信息</h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="row">
+                        <div class="col-md-4">编号</div>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" id="uid"/>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">用户名</div>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" id="uname"/>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">登陆名</div>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" id="loginName"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12"></div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="save()">保存</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+</body>
+</html>
+
+<script>
+
+    $(function(){
+        $("#myModal").modal({
+            show:false,
+            backdrop:true,
+            keyboard:false
+        })
+    })
+    //修改
+    function edit(id){
+        //发起异步get请求，返回JSON数据
+        $.getJSON("http://localhost:80/user/getUser/"+id,function(data){
+          //  console.log(data)
+            //data：表示返回的json格式数据。
+            //#表示ID
+            //取得数据后绑定到文本框
+           $("#uid").val(data.id);
+           $("#uname").val(data.uname);
+           $("#loginName").val(data.loginName);
+           //显示模态框
+            $("#myModal").modal('show')
+        })
+    }
+
+    function save(){
+
+        $.post("http://localhost:80/user/save",{
+            //val()函数，带参是赋值。无参是取值。
+            uid:$("#uid").val(),
+            uname:$("#uname").val(),
+            loginName:$("#loginName").val()
+        },function (data){
+            console.log(data);
+            alter("修改成功")
+            //关闭文本框
+            $("#myModal").modal('hide');
+            //清空文本框。
+            $("#uid").val("");
+            $("#uname").val("");
+            $("#loginName").val("");
+        })
+    }
+    //删除
+    // function del(id){
+    //     if(confirm("是否确认删除")){
+    //         $.
+    //     }
+    // }
+
+//    edit(2)
+</script>
